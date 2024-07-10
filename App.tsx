@@ -22,7 +22,7 @@ const App = ({ isDarkMode }: { isDarkMode: boolean }): JSX.Element => {
     <View style={styles.parent}>
       <StatusBar
         animated={true}
-        backgroundColor={isDarkMode ? MD3Colors.primary0 : MD3Colors.neutral0}
+        backgroundColor={isDarkMode ? MD3Colors.primary0 : MD3Colors.primary100}
         barStyle={!isDarkMode ? "dark-content" : "light-content"}
         showHideTransition={"fade"}
       />

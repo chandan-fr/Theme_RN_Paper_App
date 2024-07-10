@@ -1,117 +1,99 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, { useState } from 'react';
+import { FlatList, Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Appbar, Button, Card, Text, Dialog, Switch, MD3Colors } from 'react-native-paper';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const App = ({ isDarkMode }: { isDarkMode: boolean }): JSX.Element => {
+  const [visible, setVisible] = useState<boolean>(false);
+  const [isSwitchOn, setIsSwitchOn] = useState<boolean>(false);
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+  const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const hideDialog = () => setVisible(false);
+
+  const getImageURL = (i: number): string => {
+    if (Platform.OS === "ios") {
+      return 'https://picsum.photos/700';
+    }
+    return `https://picsum.photos/70${i + 1}`;
+  };
+
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View style={styles.parent}>
+      <StatusBar
+        animated={true}
+        backgroundColor={isDarkMode ? MD3Colors.primary0 : MD3Colors.neutral0}
+        barStyle={!isDarkMode ? "dark-content" : "light-content"}
+        showHideTransition={"fade"}
+      />
+
+      {/* header */}
+      <Appbar.Header>
+        <Appbar.Action icon="menu" />
+        <Appbar.Content title="Theme App" />
+        <Switch value={isSwitchOn} onValueChange={onToggleSwitch} />
+        <Appbar.Action icon="dots-vertical" />
+      </Appbar.Header>
+
+      {/* body */}
+      <View style={styles.body}>
+        <View style={{ marginHorizontal: 10, }}>
+          <FlatList
+            data={[1, 1, 1, 1, 1]}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(_, index) => index.toString()}
+            renderItem={({ item, index }) => (
+              <>
+                {index === 0 && <View style={{ marginTop: 10 }} />}
+
+                <Card style={{ marginBottom: 10 }}>
+                  {/* cover Image */}
+                  <Card.Cover source={{ uri: getImageURL(index) }} />
+
+                  {/* card content */}
+                  <Card.Content style={{ marginTop: 10 }}>
+                    <Text variant="titleMedium">Why do we use it?</Text>
+                    <Text variant="bodySmall" style={{ marginTop: 15, textAlign: "justify" }}>
+                      It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.
+                      The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here,
+                      content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum
+                      as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy.
+                      Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
+                    </Text>
+                  </Card.Content>
+
+                  {/* card actions */}
+                  <Card.Actions>
+                    <Button onPress={() => setVisible(true)} >Ok</Button>
+                  </Card.Actions>
+                </Card>
+              </>
+            )}
+          />
+        </View>
+
+        {/* dialog box */}
+        <Dialog visible={visible}>
+          <Dialog.Title>Theme App</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyMedium">This is simple dialog box for testing purpose!</Text>
+          </Dialog.Content>
+
+          <Dialog.Actions>
+            <Button onPress={() => hideDialog()}>Ok</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </View>
     </View>
   );
 }
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  parent: {
+    flex: 1,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  body: {
+    flex: 1,
   },
 });
 

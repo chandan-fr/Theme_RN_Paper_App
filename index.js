@@ -2,8 +2,19 @@
  * @format
  */
 
-import {AppRegistry} from 'react-native';
+import { AppRegistry, useColorScheme } from 'react-native';
 import App from './App';
-import {name as appName} from './app.json';
+import { name as appName } from './app.json';
+import { MD3DarkTheme, MD3LightTheme, PaperProvider } from 'react-native-paper';
 
-AppRegistry.registerComponent(appName, () => App);
+const AppWrapper = () => {
+    const isDarkMode = useColorScheme() === 'dark';
+
+    return (
+        <PaperProvider theme={isDarkMode ? MD3DarkTheme : MD3LightTheme}>
+            <App isDarkMode={isDarkMode} />
+        </PaperProvider>
+    )
+};
+
+AppRegistry.registerComponent(appName, () => AppWrapper);

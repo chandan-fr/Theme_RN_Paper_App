@@ -1,10 +1,32 @@
 import React, { useState } from 'react';
 import { FlatList, Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { Appbar, Button, Card, Text, Dialog, Switch, MD3Colors } from 'react-native-paper';
+import { Appbar, Button, Card, Text, Dialog, Switch, MD3Colors, Menu } from 'react-native-paper';
+import Share from 'react-native-share';
+
+type Options_Props = {
+  message: string;
+  url: string;
+  email: string;
+  subject: string;
+  recipient: string;
+};
+
+const defaultOptions: Options_Props = {
+  message: "This is a default message.",
+  url: "https://defaulturl.com",
+  email: "default@example.com",
+  subject: "Default Subject",
+  recipient: "919876543210"
+};
+
+const createOptions = (customOptions: Partial<Options_Props>): Options_Props => {
+  return { ...defaultOptions, ...customOptions };
+};
 
 
 const App = ({ isDarkMode }: { isDarkMode: boolean }): JSX.Element => {
   const [visible, setVisible] = useState<boolean>(false);
+  const [isMenu, setIsMenu] = useState<boolean>(false);
   const [isSwitchOn, setIsSwitchOn] = useState<boolean>(false);
 
   const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
@@ -16,6 +38,19 @@ const App = ({ isDarkMode }: { isDarkMode: boolean }): JSX.Element => {
       return 'https://picsum.photos/700';
     }
     return `https://picsum.photos/70${i + 1}`;
+  };
+
+  const handleShare = async (): Promise<void> => {
+    let options: Options_Props = createOptions({
+      message: "This is test share with message text.",
+    });
+
+    try {
+      const res: any = await Share.open(options);
+      console.log("response : ", res);
+    } catch (error: any) {
+      console.log("error : ", error.message);
+    }
   };
 
   return (
@@ -32,7 +67,16 @@ const App = ({ isDarkMode }: { isDarkMode: boolean }): JSX.Element => {
         <Appbar.Action icon="menu" />
         <Appbar.Content title="Theme App" />
         <Switch value={isSwitchOn} onValueChange={onToggleSwitch} />
-        <Appbar.Action icon="dots-vertical" />
+        <Menu
+          visible={isMenu}
+          onDismiss={() => setIsMenu(false)}
+          anchor={<Appbar.Action onPress={() => setIsMenu(true)} icon="dots-vertical" />}
+        >
+          <Menu.Item leadingIcon="content-cut" onPress={() => { }} title="Cut" />
+          <Menu.Item leadingIcon="content-copy" onPress={() => { }} title="Copy" />
+          <Menu.Item leadingIcon="content-paste" onPress={() => { }} title="Paste" disabled />
+          <Menu.Item leadingIcon="share-variant" onPress={() => handleShare()} title="Share" />
+        </Menu>
       </Appbar.Header>
 
       {/* body */}
